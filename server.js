@@ -43,7 +43,7 @@ app.post("/leaderLogin", async (req, res) => {
         allowed_countries: ["US", "BR", "IN"]
     },
       success_url: `${process.env.BASE_URL}/login?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.BASE_URL}/cancel`
+      cancel_url: `${process.env.BASE_URL}/login`
   });
   res.json({ url: session.url });
 });
@@ -101,7 +101,7 @@ app.post('/cart-payment', async (req, res) => {
       },
       discounts: discounts,
       success_url: `${process.env.BASE_URL}/complete?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.BASE_URL}/cart?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.BASE_URL}/cart`,
       metadata: {
         couponName: couponName || 'No Coupon Applied', // Include the voucher name in the metadata
       }
@@ -189,11 +189,28 @@ app.get('/stripe-session/:id', async (req, res) => {
     res.status(500).json({ error: 'Failed to retrieve session' });
   }
 });
-  
 
-app.get("/complete",(req,res) =>{
-    res.send("Your payment was successful")
-})
+
+  
+app.get('/payment-details/:session_id', async (req, res) => {
+  const { session_id } = req.params;
+
+  
+  try {
+    const session = await stripe.checkout.sessions.retrieve(session_id,{
+      expand: ['line_items', 'line_items.data.price.product']
+    });
+    res.json(session);
+  } catch (error) {
+    console.error('Error retrieving Stripe session:', error);
+    res.status(500).json({ error: 'Failed to retrieve session details' });
+  }
+});
+
+
+// app.get("/complete",(req,res) =>{
+//     res.send("Your payment was successful")
+// })
 
 app.get("/cancel",(req,res)=>{
     res.redirect("http://localhost:3000/cart")
