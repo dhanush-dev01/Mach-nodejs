@@ -101,7 +101,7 @@ app.post('/cart-payment', async (req, res) => {
       },
       discounts: discounts,
       success_url: `${process.env.BASE_URL}/complete?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.BASE_URL}/cart`,
+      cancel_url: `${process.env.BASE_URL}/user`,
       metadata: {
         couponName: couponName || 'No Coupon Applied', // Include the voucher name in the metadata
       }
@@ -212,7 +212,7 @@ app.get('/payment-details/:session_id', async (req, res) => {
 //     res.send("Your payment was successful")
 // })
 
-app.get("/cancel",(req,res)=>{
-    res.redirect("http://localhost:3000/cart")
-})
+// app.get("/cancel",(req,res)=>{
+//     res.redirect("http://localhost:3000/cart")
+// })
 app.listen(8000,()=> console.log("Server started on port 8000"))
